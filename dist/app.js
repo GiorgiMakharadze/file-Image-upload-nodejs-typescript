@@ -21,14 +21,14 @@ const not_found_1 = require("./api/middleware/not-found");
 const error_handler_1 = require("./api/middleware/error-handler");
 const port = process.env.PORT || 3000;
 const app = (0, express_1.default)();
+app.get("/", (req, res) => {
+    res.send("<h1>File Upload Starter</h1>");
+});
 // error handler & middleware
 app.use(not_found_1.notFound);
 app.use(error_handler_1.errorHandlerMiddleware);
 app.use((0, morgan_1.default)("dev"));
 //routes
-app.get("/", (req, res) => {
-    res.send("<h1>File Upload Starter</h1>");
-});
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, connect_1.connectDB)(process.env.MONGO_URI);

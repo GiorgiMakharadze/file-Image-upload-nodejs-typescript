@@ -9,15 +9,16 @@ import { errorHandlerMiddleware } from "./api/middleware/error-handler";
 const port = process.env.PORT || 3000;
 const app = express();
 
+app.get("/", (req, res) => {
+  res.send("<h1>File Upload Starter</h1>");
+});
+
 // error handler & middleware
 app.use(notFound);
 app.use(errorHandlerMiddleware);
 app.use(morgan("dev"));
 
 //routes
-app.get("/", (req, res) => {
-  res.send("<h1>File Upload Starter</h1>");
-});
 
 const start = async () => {
   try {
