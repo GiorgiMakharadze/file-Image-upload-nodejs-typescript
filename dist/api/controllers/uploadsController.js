@@ -18,9 +18,16 @@ const http_status_codes_1 = require("http-status-codes");
 const bad_request_1 = require("../errors/bad-request");
 const uploadProductImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    if (!req.files) {
+        throw new bad_request_1.BadRequestError("No file uploaded");
+    }
     const productImage = (_a = req.files) === null || _a === void 0 ? void 0 : _a.image;
-    if (!productImage) {
-        throw new bad_request_1.BadRequestError("No product image uploaded");
+    if (!productImage.mimetype.startsWith("image")) {
+        throw new bad_request_1.BadRequestError("Please upload Image");
+    }
+    const maxSize = parseInt(process.env.IMAGE_MAX_SIZE);
+    if (productImage.size > maxSize) {
+        throw new bad_request_1.BadRequestError(`Please upload Image smaller ${maxSize} KB`);
     }
     const imagePath = path_1.default.join(__dirname, "../../../public/uploads/" + `${productImage === null || productImage === void 0 ? void 0 : productImage.name}`);
     yield (productImage === null || productImage === void 0 ? void 0 : productImage.mv(imagePath));
