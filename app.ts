@@ -5,20 +5,23 @@ import morgan from "morgan";
 import { connectDB } from "./api/db/connect";
 import { notFound } from "./api/middleware/not-found";
 import { errorHandlerMiddleware } from "./api/middleware/error-handler";
+import productRouter from "./api/routes/productRoutes";
 
 const port = process.env.PORT || 3000;
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("<h1>File Upload Starter</h1>");
-});
+app.use("/api/v1/products", productRouter);
 
 // error handler & middleware
 app.use(notFound);
 app.use(errorHandlerMiddleware);
 app.use(morgan("dev"));
+app.use(express.json());
 
 //routes
+app.get("/", (req, res) => {
+  res.send("<h1>File Upload Starter</h1>");
+});
 
 const start = async () => {
   try {
