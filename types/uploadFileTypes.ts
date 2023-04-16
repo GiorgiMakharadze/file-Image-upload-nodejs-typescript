@@ -3,4 +3,5 @@ export interface IUploadFile {
   mimetype: string;
   size: number;
   mv: (path: string) => Promise<void>;
+  tempFilePath?: string;
 }

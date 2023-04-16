@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import path from "path";
 import { StatusCodes } from "http-status-codes";
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 import { BadRequestError } from "../errors/bad-request";
 import { IUploadFile } from "../../types/uploadFileTypes";
 
-export const uploadProductImage = async (req: Request, res: Response) => {
+export const uploadProductImageLocal = async (req: Request, res: Response) => {
   if (!req.files) {
     throw new BadRequestError("No file uploaded");
   }
@@ -27,4 +29,19 @@ export const uploadProductImage = async (req: Request, res: Response) => {
   return res
     .status(StatusCodes.OK)
     .json({ image: { src: `/uploads/${productImage?.name}` } });
+};
+
+export const uploadProductImageCloudinary = async (
+  req: Request,
+  res: Response
+) => {
+  const result = await cloudinary.uploader.upload(
+    req.files?.image.tempFilePath,
+    {
+      use_filename: true,
+      folder: "file-upload-node",
+    }
+  );
+  fs.unlinkSync(req.files?.image.tempFilePath);
+  return res.status(StatusCodes.OK).json({ image: { src: result.secure_url } });
 };

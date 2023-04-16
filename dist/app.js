@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 require("dotenv/config");
 require("express-async-errors");
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
+const cloudinary_1 = require("cloudinary");
 const morgan_1 = __importDefault(require("morgan"));
 const connect_1 = require("./api/db/connect");
 const not_found_1 = require("./api/middleware/not-found");
@@ -27,7 +28,13 @@ const app = (0, express_1.default)();
 app.use(express_1.default.static("./public"));
 app.use((0, morgan_1.default)("dev"));
 app.use(express_1.default.json());
-app.use((0, express_fileupload_1.default)());
+app.use((0, express_fileupload_1.default)({ useTempFiles: true }));
+//cloudinary
+cloudinary_1.v2.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET,
+});
 //routes
 app.get("/", (req, res) => {
     res.send("<h1>File Upload Starter</h1>");

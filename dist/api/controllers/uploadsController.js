@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadProductImage = void 0;
+exports.uploadProductImageCloudinary = exports.uploadProductImageLocal = void 0;
 const path_1 = __importDefault(require("path"));
 const http_status_codes_1 = require("http-status-codes");
+const cloudinary_1 = require("cloudinary");
+const fs_1 = __importDefault(require("fs"));
 const bad_request_1 = require("../errors/bad-request");
-const uploadProductImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const uploadProductImageLocal = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     if (!req.files) {
         throw new bad_request_1.BadRequestError("No file uploaded");
@@ -35,4 +37,14 @@ const uploadProductImage = (req, res) => __awaiter(void 0, void 0, void 0, funct
         .status(http_status_codes_1.StatusCodes.OK)
         .json({ image: { src: `/uploads/${productImage === null || productImage === void 0 ? void 0 : productImage.name}` } });
 });
-exports.uploadProductImage = uploadProductImage;
+exports.uploadProductImageLocal = uploadProductImageLocal;
+const uploadProductImageCloudinary = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b, _c;
+    const result = yield cloudinary_1.v2.uploader.upload((_b = req.files) === null || _b === void 0 ? void 0 : _b.image.tempFilePath, {
+        use_filename: true,
+        folder: "file-upload-node",
+    });
+    fs_1.default.unlinkSync((_c = req.files) === null || _c === void 0 ? void 0 : _c.image.tempFilePath);
+    return res.status(http_status_codes_1.StatusCodes.OK).json({ image: { src: result.secure_url } });
+});
+exports.uploadProductImageCloudinary = uploadProductImageCloudinary;
