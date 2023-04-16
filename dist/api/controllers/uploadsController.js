@@ -8,9 +8,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadProductImage = void 0;
+const path_1 = __importDefault(require("path"));
+const http_status_codes_1 = require("http-status-codes");
+const bad_request_1 = require("../errors/bad-request");
 const uploadProductImage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send("upload product image");
+    var _a;
+    const productImage = (_a = req.files) === null || _a === void 0 ? void 0 : _a.image;
+    if (!productImage) {
+        throw new bad_request_1.BadRequestError("No product image uploaded");
+    }
+    const imagePath = path_1.default.join(__dirname, "../../../public/uploads/" + `${productImage === null || productImage === void 0 ? void 0 : productImage.name}`);
+    yield (productImage === null || productImage === void 0 ? void 0 : productImage.mv(imagePath));
+    return res
+        .status(http_status_codes_1.StatusCodes.OK)
+        .json({ image: { src: `/uploads/${productImage === null || productImage === void 0 ? void 0 : productImage.name}` } });
 });
 exports.uploadProductImage = uploadProductImage;

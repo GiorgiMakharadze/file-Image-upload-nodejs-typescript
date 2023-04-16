@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 require("dotenv/config");
 require("express-async-errors");
+const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const morgan_1 = __importDefault(require("morgan"));
 const connect_1 = require("./api/db/connect");
 const not_found_1 = require("./api/middleware/not-found");
@@ -22,16 +23,19 @@ const error_handler_1 = require("./api/middleware/error-handler");
 const productRoutes_1 = __importDefault(require("./api/routes/productRoutes"));
 const port = process.env.PORT || 3000;
 const app = (0, express_1.default)();
-app.use("/api/v1/products", productRoutes_1.default);
-// error handler & middleware
-app.use(not_found_1.notFound);
-app.use(error_handler_1.errorHandlerMiddleware);
+//middleware
+app.use(express_1.default.static("./public"));
 app.use((0, morgan_1.default)("dev"));
 app.use(express_1.default.json());
+app.use((0, express_fileupload_1.default)());
 //routes
 app.get("/", (req, res) => {
     res.send("<h1>File Upload Starter</h1>");
 });
+app.use("/api/v1/products", productRoutes_1.default);
+// error handler
+app.use(not_found_1.notFound);
+app.use(error_handler_1.errorHandlerMiddleware);
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, connect_1.connectDB)(process.env.MONGO_URI);

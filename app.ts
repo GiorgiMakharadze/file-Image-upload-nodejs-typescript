@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import "dotenv/config";
 import "express-async-errors";
+import fileUpload from "express-fileupload";
 import morgan from "morgan";
 import { connectDB } from "./api/db/connect";
 import { notFound } from "./api/middleware/not-found";
@@ -10,18 +11,22 @@ import productRouter from "./api/routes/productRoutes";
 const port = process.env.PORT || 3000;
 const app = express();
 
-app.use("/api/v1/products", productRouter);
-
-// error handler & middleware
-app.use(notFound);
-app.use(errorHandlerMiddleware);
+//middleware
+app.use(express.static("./public"));
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(fileUpload());
 
 //routes
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("<h1>File Upload Starter</h1>");
 });
+
+app.use("/api/v1/products", productRouter);
+
+// error handler
+app.use(notFound);
+app.use(errorHandlerMiddleware);
 
 const start = async () => {
   try {
